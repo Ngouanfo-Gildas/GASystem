@@ -87,7 +87,7 @@ def main():
     pm            = 0.1
     nb_generation = 5
     population    = initPopulation(pop_size, nombre_objets)
-    i  = 0
+    i  = 0  
     while i < nb_generation:
         nvlle_gen     = []
         fitnessValues = fitnessFunction(population, objets)
