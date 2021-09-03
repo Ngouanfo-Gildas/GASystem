@@ -90,8 +90,13 @@ def generate_genome(nb_nodes: int, zone_size: int) -> Individu:
         genome[i] = nodes[i].point_aleatoire(zone_size)
     return genome
 
-def show_genome(rayonC: int, rayonS: int, genome: Individu):
+def show_genome(rayonC: int, rayonS: int, genome: Individu, events: list):
     alpha = np.linspace(0, 2*np.pi, 200)
+    for event in events:
+        xs = event.x
+        ys = event.y
+        plt.plot(xs, ys, "s", color="black")
+
     for node in genome:
         cx = node.x
         cy = node.y
@@ -107,6 +112,15 @@ def show_genome(rayonC: int, rayonS: int, genome: Individu):
         plt.plot(xs, ys, "g")
     
     plt.grid(linestyle='-')
+    plt.axis("equal")
+    plt.show()
+
+def show_events(events: list):
+    for event in events:
+        xs = event.x
+        ys = event.y
+        plt.plot(xs, ys, "s", color="black")
+
     plt.axis("equal")
     plt.show()
 
@@ -185,34 +199,14 @@ pop     = [1,   2,  3, 4, 5,  6,  7,  8,  9]
 fitness = [28, 18, 14, 9, 26, 30, 20, 50, 35]
 # print(selection_roulatte(pop, fitness, 5))
 
-p = Point()
-q = Point() 
-r = Point() 
-s = Point()
-rect = Rectangle(p, q, r, s)
-# print(rect.rectangle_aleatoire(50, 1))
-# rect.show_rectangle()
+events = [Point(50, 60), Point(300, 500), Point(700, 100), Point(200, 50)]
+
 
 #population = generate_population(10, 5, 30)
-genome1: Individu = generate_genome(20, 1200)
+genome1: Individu = generate_genome(10, 1000)
 genome2: Individu = generate_genome(5, 20)
-show_genome(60, 100, genome1)
-# for p in genome1:
-#     print(p, end=" ")
-# print()
-# for p in genome2:
-#     print(p, end=" ")
-# print()
 
-# gen1, gen2 = crossover(genome1, genome2, 0.5)
-# for p in gen1:
-#     print(p, end=" ")
-# print()
-# for p in gen2:
-#     print(p, end=" ")
-# print()
+show_genome(60, 100, genome1, events)
 
-# gen3 = mutation(gen1, 0.1, 20)
-# for p in gen3:
-#     print(p, end=" ")
-# print()
+
+
