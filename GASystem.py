@@ -90,7 +90,7 @@ def generate_genome(nb_nodes: int, zone_size: int) -> Individu:
         genome[i] = nodes[i].point_aleatoire(zone_size)
     return genome
 
-def show_genome(rayonC: int, rayonS: int, genome: Individu, events: list):
+def show_genome(rayonC, rayonS, genome: Individu, events: list):
     alpha = np.linspace(0, 2*np.pi, 200)
     for event in events:
         xs = event.x
@@ -199,14 +199,82 @@ pop     = [1,   2,  3, 4, 5,  6,  7,  8,  9]
 fitness = [28, 18, 14, 9, 26, 30, 20, 50, 35]
 # print(selection_roulatte(pop, fitness, 5))
 
-events = [Point(50, 60), Point(300, 500), Point(700, 100), Point(200, 50)]
+events = [Point(50, 60), Point(300, 500), Point(700, 100), Point(200, 50), Point(600, 750)]
 
 
 #population = generate_population(10, 5, 30)
 genome1: Individu = generate_genome(10, 1000)
 genome2: Individu = generate_genome(5, 20)
 
-show_genome(60, 100, genome1, events)
+# -----------------------------------------------------------------
+def placement(potentials_pos: Individu, events: Individu, rs, rc):
+    # Couverture
+    positions = []
+    for ev in events:
+        for pos in potentials_pos:
+            if ev.distance(pos) < rs:
+                positions.append(pos)
+    show_genome(rs, rc, positions, events)
+# ------------------------------------------------------------------
+def positions_potentielles():
+    potentials_positions = []
+    i = 60
+    while i<1000:
+        j = 60
+        while j<1000:
+            potentials_positions.append(Point(i, j))
+            j += 110
+        i += 110
+    return potentials_positions
+# ------------------------------------------------------------------
+def generate_population(pos_potentiel: Individu, nb_nodes: int):
+    population = []
+    n = len(pos_potentiel)
+    for i in range(nb_nodes):
+        k = random.randint(0, n)
+        population.append(pos_potentiel[k])
+    return population
+
+# placement(potentials_positions, events, 60, 100)
+# show_genome(60, 100, potentials_positions, genome1)
+
+# -------------------------------------------------------------------
+# Liste des événements couverts
+def event_couvert(P: Individu, E: Individu, rs):
+    eventCover = []
+    for p in P :
+        for e in E :
+            if e.distance(p) < 2*rs :
+                eventCover.append(e)
+    return eventCover
+# --------------------------------
+# Calcul des voisins de chaque noeud
+def list_voisins(P: Individu, p: Point, rc):
+    voisin = []
+    for q in P :
+        if p.distance(q) < rc :
+            voisin.append(q)
+    return voisin
+# --------------------------------
+# Construction des clusters
+def list_clusters(P:Individu, rc):
+    clusters = []
+    for p in P :
+        cluster = []
+        Vp = list_voisins(P, p, rc)
+        for q in Vp:
+            if q not in cluster:
+                cluster.append(q)
+            Vq = list_voisins(P, q, rc)
+            for r in Vq:
+                if r not in cluster:
+                    cluster.append(r)
+            P.remove(q)
+        clusters.append(cluster)
+    return clusters
+# --------------------------------
+list_ = [Point(2,1),Point(3,2),Point(4,1),Point(4,5),Point(5,5),Point(6,5),Point(7,2),Point(8,3)]
+clst = list_clusters([Point(2,1),Point(3,2),Point(4,1),Point(4,5),Point(5,5),Point(6,5),Point(7,2),Point(8,3)], 2)
 
 
-
+# placement(list_, list_, 1, 2)

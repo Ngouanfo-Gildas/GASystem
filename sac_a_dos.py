@@ -1,12 +1,24 @@
 import random
 import copy
 
-POIDS = 15
+POIDS = 50
 
 objets = [
     {
+        "poids": 0.05,
+        "valeur": 1500
+    },
+    {
+        "poids": 2,
+        "valeur": 25000
+    },
+    {
         "poids": 12,
         "valeur": 2000
+    },
+    {
+        "poids": 35,
+        "valeur": 40000
     },
     {
         "poids": 2,
@@ -17,7 +29,7 @@ objets = [
         "valeur": 2000
     },
     {
-        "poids": 1,
+        "poids": 3,
         "valeur": 2000
     },
     {
@@ -74,26 +86,44 @@ def fitnessFunction(population, objets):
         fitnessValues.append([population.index(individu), valeur, poids])
     return fitnessValues
 
-def selection_rang(population, fitnessValues, nbre):
-    taille = len(population)
+def unique(liste):
+    set_list = []
+    for elt in liste:
+        if elt not in set_list:
+            set_list.append(elt)
+    return set_list
+
+def selection_rang(population, fitnessValues):
     select = copy.deepcopy(fitnessValues)
     nwlist = sorted(select, key=lambda x: x[2], reverse = True)   
     return population[nwlist[0][0]], population[nwlist[1][0]]
 
+def final_selection(population, fitnessValues):
+    select = copy.deepcopy(fitnessValues)
+    nwlist = [ elt for elt in select if elt[2] <= POIDS]
+    nwlist = unique(sorted(nwlist, key=lambda x: x[1], reverse = True))
+    return str(population[nwlist[0][0]])+" - POIDS  = "+str(nwlist[0][2])+" VALEUR = "+str(nwlist[0][1])
+
+def print_solution(individu, objets):
+    solution = "\n"
+    n = len(individu)
+    for id in range(n):
+        if individu[id] == 1:
+            solution += str(objets[id])+"\n"
+    print(solution)
 
 def main():
-    pop_size      = 10
-    pc            = 0.7
-    pm            = 0.1
-    nb_generation = 5
+    pop_size      = 200
+    pc            = 0.75
+    pm            = 0.2
+    nb_generation = 100
     population    = initPopulation(pop_size, nombre_objets)
     i  = 0  
     while i < nb_generation:
         nvlle_gen     = []
         fitnessValues = fitnessFunction(population, objets)
-        print(i)
-        for j in range(6):
-            s1, s2 = selection_rang(population, fitnessValues, 2)
+        for j in range(20):
+            s1, s2 = selection_rang(population, fitnessValues)
             o1, o2    = crossover(s1, s2, pc)
             o11 = mutation(o1, pm)
             o22 = mutation(o2, pm)
@@ -101,6 +131,21 @@ def main():
             nvlle_gen.append(o22)
         population = copy.deepcopy(nvlle_gen)
         i = i+1
-    return s1
+    return final_selection(population, fitnessValues)
 
-print(main())
+solution = main()
+print(solution)
+
+def initPopulationC(nb_individus, nb_gene):
+    """ nb_individus: Nombre de solution à générer \n
+        nb_gene : Nombre de gènes par individu \n
+    """
+    population = []
+    for cp in range(nb_individus):
+        individu = [1]
+        while len(individu)<nb_gene:
+            val = random.randint(2, nb_gene)
+            if val not in individu:
+                individu.append(val)
+        population.append(individu)
+    return population
